@@ -1,9 +1,4 @@
-﻿using System;
+﻿namespace PaymentProcessing.Exceptions;
 
-namespace PaymentProcessing.Exceptions
-{
-    [Serializable]
-    public class InsufficientPaymentException : ArgumentException
-    {
-    }
-}
+[Serializable]
+public class InsufficientPaymentException : ArgumentException;

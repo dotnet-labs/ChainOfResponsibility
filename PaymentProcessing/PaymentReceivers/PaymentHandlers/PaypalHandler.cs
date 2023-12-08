@@ -1,19 +1,17 @@
-﻿using System.Linq;
-using PaymentProcessing.Models;
+﻿using PaymentProcessing.Models;
 
-namespace PaymentProcessing.PaymentReceivers.PaymentHandlers
+namespace PaymentProcessing.PaymentReceivers.PaymentHandlers;
+
+public class PaypalHandler : IReceiver<Order>
 {
-    public class PaypalHandler : IReceiver<Order>
+    public void Handle(Order order)
     {
-        public void Handle(Order order)
-        {
-            // Invoke the Paypal API to finalize payment
+        // Invoke the PayPal API to finalize payment
 
-            var payment = order.SelectedPayments.FirstOrDefault(x => x.PaymentProvider == PaymentProvider.Paypal);
+        var payment = order.SelectedPayments.FirstOrDefault(x => x.PaymentProvider == PaymentProvider.Paypal);
 
-            if (payment == null) return;
+        if (payment == null) return;
 
-            order.FinalizePayment(payment);
-        }
+        order.FinalizePayment(payment);
     }
 }

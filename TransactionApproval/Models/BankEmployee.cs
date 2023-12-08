@@ -1,98 +1,78 @@
-﻿using System;
+﻿namespace TransactionApproval.Models;
 
-namespace TransactionApproval.Models
+public abstract class BankEmployee(string name)
 {
-    public abstract class BankEmployee
+    public string Name { get; } = name;
+    public BankEmployee? NextUpLevel { get; private set; }
+
+    public void SetNextUpLevel(BankEmployee nextUpLevel)
     {
-        public string Name { get; }
-        public BankEmployee NextUpLevel { get; private set; }
-
-        protected BankEmployee(string name)
-        {
-            Name = name;
-        }
-
-        public void SetNextUpLevel(BankEmployee nextUpLevel)
-        {
-            NextUpLevel = nextUpLevel;
-        }
-
-        public void HandleWithdrawRequest(BankAccount account, decimal amount)
-        {
-            if (CanHandleRequest(account, amount))
-            {
-                Withdraw(account, amount);
-            }
-            else
-            {
-                if (NextUpLevel == null)
-                {
-                    Console.WriteLine($"Not able to handle this withdraw, because {Name}'s next upper level is not set.");
-                    return;
-                }
-                NextUpLevel.HandleWithdrawRequest(account, amount);
-            }
-        }
-
-        protected abstract bool CanHandleRequest(BankAccount account, decimal amount);
-
-        protected abstract void Withdraw(BankAccount account, decimal amount);
+        NextUpLevel = nextUpLevel;
     }
 
-    public class Teller : BankEmployee
+    public void HandleWithdrawRequest(BankAccount account, decimal amount)
     {
-        public Teller(string name) : base(name)
+        if (CanHandleRequest(account, amount))
         {
+            Withdraw(account, amount);
         }
-
-        protected override bool CanHandleRequest(BankAccount account, decimal amount)
+        else
         {
-            return amount <= 10000;
-        }
-
-        protected override void Withdraw(BankAccount account, decimal amount)
-        {
-            Console.WriteLine("Amount withdrawn by Teller");
-        }
-    }
-
-    public class Supervisor : BankEmployee
-    {
-        public Supervisor(string name) : base(name)
-        {
-        }
-
-        protected override bool CanHandleRequest(BankAccount account, decimal amount)
-        {
-            return amount <= 100000;
-        }
-
-        protected override void Withdraw(BankAccount account, decimal amount)
-        {
-            if (!account.IdOnRecord)
+            if (NextUpLevel == null)
             {
-                Console.WriteLine("Account holder does not have ID on record. Not able to proceed.");
+                Console.WriteLine($"Not able to handle this withdraw, because {Name}'s next upper level is not set.");
                 return;
             }
-
-            Console.WriteLine("Amount withdrawn by Supervisor");
+            NextUpLevel.HandleWithdrawRequest(account, amount);
         }
     }
 
-    public class BankManager : BankEmployee
+    protected abstract bool CanHandleRequest(BankAccount account, decimal amount);
+
+    protected abstract void Withdraw(BankAccount account, decimal amount);
+}
+
+public class Teller(string name) : BankEmployee(name)
+{
+    protected override bool CanHandleRequest(BankAccount account, decimal amount)
     {
-        public BankManager(string name) : base(name)
+        return amount <= 10000;
+    }
+
+    protected override void Withdraw(BankAccount account, decimal amount)
+    {
+        Console.WriteLine("Amount withdrawn by Teller");
+    }
+}
+
+public class Supervisor(string name) : BankEmployee(name)
+{
+    protected override bool CanHandleRequest(BankAccount account, decimal amount)
+    {
+        return amount <= 100000;
+    }
+
+    protected override void Withdraw(BankAccount account, decimal amount)
+    {
+        if (!account.IdOnRecord)
         {
+            Console.WriteLine("Account holder does not have ID on record. Not able to proceed.");
+            return;
         }
 
-        protected override bool CanHandleRequest(BankAccount account, decimal amount)
-        {
-            return true;
-        }
+        Console.WriteLine("Amount withdrawn by Supervisor");
+    }
+}
 
-        protected override void Withdraw(BankAccount account, decimal amount)
-        {
-            Console.WriteLine("Amount withdrawn by Bank Manager");
-        }
+public class BankManager(string name) : BankEmployee(name)
+{
+    protected override bool CanHandleRequest(BankAccount account, decimal amount)
+    {
+        return true;
+    }
+
+    protected override void Withdraw(BankAccount account, decimal amount)
+    {
+        Console.WriteLine("Amount withdrawn by Bank Manager");
     }
 }

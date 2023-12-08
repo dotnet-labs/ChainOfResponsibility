@@ -1,13 +1,10 @@
-﻿using System;
+﻿namespace UserRegistration.Exceptions;
 
-namespace UserRegistration.Exceptions
+[Serializable]
+public class UserValidationException : ArgumentException
 {
-    [Serializable]
-    public class UserValidationException : ArgumentException
+    public UserValidationException(string message) : base(message)
     {
-        public UserValidationException(string message) : base(message)
-        {
 
-        }
     }
 }

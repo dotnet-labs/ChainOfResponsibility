@@ -1,18 +1,16 @@
-﻿using System.Linq;
-using PaymentProcessing.Models;
+﻿using PaymentProcessing.Models;
 
-namespace PaymentProcessing.PaymentReceivers.PaymentHandlers
+namespace PaymentProcessing.PaymentReceivers.PaymentHandlers;
+
+public class CreditCardHandler : IReceiver<Order>
 {
-    public class CreditCardHandler : IReceiver<Order>
+    public void Handle(Order order)
     {
-        public void Handle(Order order)
-        {
-            // Invoke the Stripe API
-            var payment = order.SelectedPayments.FirstOrDefault(x => x.PaymentProvider == PaymentProvider.CreditCard);
+        // Invoke the Stripe API
+        var payment = order.SelectedPayments.FirstOrDefault(x => x.PaymentProvider == PaymentProvider.CreditCard);
 
-            if (payment == null) return;
+        if (payment == null) return;
 
-            order.FinalizePayment(payment);
-        }
+        order.FinalizePayment(payment);
     }
 }

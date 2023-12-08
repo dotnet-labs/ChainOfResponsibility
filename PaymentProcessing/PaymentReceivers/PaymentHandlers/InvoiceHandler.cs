@@ -1,19 +1,17 @@
-﻿using System.Linq;
-using PaymentProcessing.Models;
+﻿using PaymentProcessing.Models;
 
-namespace PaymentProcessing.PaymentReceivers.PaymentHandlers
+namespace PaymentProcessing.PaymentReceivers.PaymentHandlers;
+
+public class InvoiceHandler : IReceiver<Order>
 {
-    public class InvoiceHandler : IReceiver<Order>
+    public void Handle(Order order)
     {
-        public void Handle(Order order)
-        {
-            // Create an invoice and email it
+        // Create an invoice and email it
 
-            var payment = order.SelectedPayments.FirstOrDefault(x => x.PaymentProvider == PaymentProvider.Invoice);
+        var payment = order.SelectedPayments.FirstOrDefault(x => x.PaymentProvider == PaymentProvider.Invoice);
 
-            if (payment == null) return;
+        if (payment == null) return;
 
-            order.FinalizePayment(payment);
-        }
+        order.FinalizePayment(payment);
     }
 }

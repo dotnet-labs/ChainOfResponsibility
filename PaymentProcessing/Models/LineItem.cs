@@ -1,16 +1,8 @@
-﻿namespace PaymentProcessing.Models
-{
-    public class LineItem
-    {
-        public string Id { get; }
-        public string Name { get; }
-        public decimal Price { get; }
+﻿namespace PaymentProcessing.Models;
 
-        public LineItem(string id, string name, decimal price)
-        {
-            Id = id;
-            Name = name;
-            Price = price;
-        }
-    }
+public class LineItem(string id, string name, decimal price)
+{
+    public string Id { get; } = id;
+    public string Name { get; } = name;
+    public decimal Price { get; } = price;
 }

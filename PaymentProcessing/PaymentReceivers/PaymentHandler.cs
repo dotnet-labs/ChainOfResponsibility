@@ -1,47 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
-using PaymentProcessing.Exceptions;
+﻿using PaymentProcessing.Exceptions;
 using PaymentProcessing.Models;
 
-namespace PaymentProcessing.PaymentReceivers
+namespace PaymentProcessing.PaymentReceivers;
+
+public class PaymentHandler
 {
-    public class PaymentHandler
+    private readonly List<IReceiver<Order>> _receivers = [];
+
+    public PaymentHandler(params IReceiver<Order>[] receivers)
     {
-        private readonly List<IReceiver<Order>> _receivers = new List<IReceiver<Order>>();
+        _receivers.AddRange(receivers);
+    }
 
-        public PaymentHandler(params IReceiver<Order>[] receivers)
+    public void Handle(Order order)
+    {
+        foreach (var receiver in _receivers)
         {
-            _receivers.AddRange(receivers);
-        }
-
-        public void Handle(Order order)
-        {
-            foreach (var receiver in _receivers)
-            {
-                Console.WriteLine($"Payment Receiver: \t {receiver.GetType().Name}");
-
-                if (order.AmountDue > 0)
-                {
-                    receiver.Handle(order);
-                }
-                else
-                {
-                    break;
-                }
-            }
+            Console.WriteLine($"Payment Receiver: \t {receiver.GetType().Name}");
 
             if (order.AmountDue > 0)
             {
-                throw new InsufficientPaymentException();
+                receiver.Handle(order);
             }
-
-            order.ShippingStatus = ShippingStatus.ReadyForShipment;
+            else
+            {
+                break;
+            }
         }
 
-        public PaymentHandler SetNext(IReceiver<Order> next)
+        if (order.AmountDue > 0)
         {
-            _receivers.Add(next);
-            return this;
+            throw new InsufficientPaymentException();
         }
+
+        order.ShippingStatus = ShippingStatus.ReadyForShipment;
+    }
+
+    public PaymentHandler SetNext(IReceiver<Order> next)
+    {
+        _receivers.Add(next);
+        return this;
     }
 }
